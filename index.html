@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeRent — застава під захистом</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm and certain, plain Ukrainian; a bank-grade promise for ordinary renters.
+   IDEA: a sealed security envelope — the deposit sits inside; the wax seal opens only by the rules.
+   PICTURE: envelope with seal and amount, a phone card in front showing the deal's live status.
+   COLOUR and TYPE: white paper, ultramarine stamp-ink fields, wax red only for seals and disputes; Unbounded + Golos Text.
+   LAYOUT: full marketing site (hero, problem, steps with live phone, roles tabs, calculator, comparison, FAQ, CTA) + two demo screens. */
+:root{color-scheme:light dark;
+ --bg:light-dark(#ffffff,#0c1130);--ink:light-dark(#111936,#eef0ff);--soft:light-dark(#566083,#a9b0d6);
+ --blue:light-dark(#2b3fd6,#7486ff);--deep:#2b3fd6;--night:#1a2799;--pale:light-dark(#eef0fd,#171e4c);--line:light-dark(#d9ddf4,#2b3469);
+ --wax:light-dark(#d1342b,#ff6f63);--ok:light-dark(#1d7650,#5fd3a0);--card:light-dark(#ffffff,#121842);--sun:#ffc53d}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Golos Text",system-ui,sans-serif;overflow-x:clip;accent-color:var(--blue)}
+h1,h2,h3,.logo,.num{font-family:Unbounded,"Golos Text",sans-serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5vw,58px);line-height:1.05;font-weight:600;letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.2vw,40px);line-height:1.1;font-weight:600}
+h3{font-size:18px;line-height:1.3;font-weight:500}
+p{margin:0}a{color:inherit}
+.band{padding:clamp(48px,7vw,104px) max(5vw,16px)}
+.wrap{max-width:1200px;margin:0 auto}
+.intro{max-width:640px;margin-bottom:clamp(28px,4vw,48px)}
+.intro p{color:var(--soft);margin-top:14px;font-size:18px}
+:focus-visible{outline:3px solid var(--wax);outline-offset:3px;border-radius:8px}
+[hidden]{display:none!important}
+/* header */
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:20px;padding:12px max(5vw,16px);max-width:none}
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;text-decoration:none}
+.logo svg{width:34px;height:34px}
+.menu{display:flex;gap:4px;margin-inline:auto}
+.menu a{padding:10px 14px;border-radius:999px;text-decoration:none;font-size:16px;font-weight:500;color:var(--soft)}
+.menu a:hover{color:var(--ink);background:var(--pale)}
+.hdr-cta{display:flex;gap:8px;margin-left:auto}
+/* buttons */
+.btn{font:600 16px/1 "Golos Text",sans-serif;border:2px solid var(--deep);background:var(--deep);color:#fff;padding:15px 24px;border-radius:14px;min-height:50px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s,background .15s}
+.btn:hover{background:var(--night);border-color:var(--night)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--blue);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--blue);background:transparent}
+.btn.white{background:#fff;color:var(--deep);border-color:#fff}
+.btn.line-w{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.btn.wax{background:var(--wax);border-color:var(--wax)}
+.btn.sm{min-height:44px;padding:11px 16px;font-size:15px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.note{font-size:14px;color:var(--soft)}
+/* hero */
+.hero{background:radial-gradient(120% 90% at 85% 10%,#4a5cf0 0,#2b3fd6 45%,#1f2fb5 100%);color:#fff;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:center}
+.hero .lead{font-size:clamp(18px,1.6vw,20px);max-width:36ch;margin:20px 0 28px;color:#dde2ff}
+.ticks{list-style:none;padding:0;margin:0 0 32px;display:grid;gap:10px}
+.ticks li{display:flex;gap:12px;align-items:flex-start;color:#eef0ff}
+.ticks b{font-weight:600;color:#fff}
+.ticks svg{flex:none;margin-top:4px}
+.scene{position:relative;aspect-ratio:5/4.4}
+.scene .env{position:absolute;inset:4% 0 auto 0;width:100%;filter:drop-shadow(0 30px 40px rgba(5,10,70,.4))}
+.phone{position:absolute;right:2%;bottom:0;width:44%;background:#fff;color:#111936;border-radius:28px;padding:14px;box-shadow:0 30px 60px rgba(5,10,70,.45);border:6px solid #0f1540}
+.phone .bar{width:38%;height:6px;border-radius:9px;background:#d9ddf4;margin:0 auto 12px}
+.phone h4{margin:0 0 2px;font:600 13px Unbounded,sans-serif}
+.phone .muted{font-size:11px;color:#566083}
+.tl{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.tl li{display:grid;grid-template-columns:18px 1fr;gap:8px;font-size:12px;line-height:1.35}
+.tl i{width:18px;height:18px;border-radius:50%;background:#e4f3ec;border:2px solid #1d7650;display:block}
+.tl li.now i{background:#2b3fd6;border-color:#2b3fd6;box-shadow:0 0 0 4px #dfe3ff}
+.tl li.next i{background:#fff;border-color:#c4cbf3}
+.tl small{display:block;color:#566083;font-size:11px}
+.sample{margin-top:18px;font-size:13px;color:#b9c1ff}
+/* facts strip */
+.strip{background:var(--night);color:#fff}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:28px}
+.strip b{display:block;font:600 22px/1.2 Unbounded,sans-serif}
+.strip span{font-size:14px;color:#c9cffb}
+/* problem */
+.prob{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.stats{display:grid;gap:0}
+.stats div{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:baseline;padding:22px 0;border-bottom:1px solid var(--line)}
+.stats div:first-child{border-top:2px solid var(--ink)}
+.num{font-size:clamp(28px,3vw,38px);font-weight:600;color:var(--blue);white-space:nowrap}
+.stats p{color:var(--soft)}
+.quote{background:var(--pale);border-radius:24px;padding:clamp(24px,3vw,36px)}
+.quote h3{margin-bottom:14px}
+.quote ul{margin:0;padding-left:20px;color:var(--soft);display:grid;gap:10px}
+/* how */
+.how{background:var(--pale)}
+.how-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,72px);align-items:center}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:10px;counter-reset:s}
+.steps button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:48px 1fr;gap:16px;padding:18px 20px;border-radius:18px;cursor:pointer;counter-increment:s;border:2px solid transparent}
+.steps button::before{content:counter(s);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font:600 16px Unbounded,sans-serif;border:2px solid var(--blue);color:var(--blue)}
+.steps button[aria-selected=true]{background:var(--card);border-color:var(--blue)}
+.steps button[aria-selected=true]::before{background:var(--deep);border-color:var(--deep);color:#fff}
+.steps button:focus-visible{outline:3px solid var(--wax)}
+.steps p{color:var(--soft);font-size:16px;margin-top:4px}
+.big-phone{width:min(330px,100%);margin:0 auto;background:#fff;color:#111936;border-radius:40px;border:10px solid #0f1540;padding:18px 16px 22px;box-shadow:0 30px 60px rgba(15,21,64,.25);min-height:520px}
+.big-phone .bar{width:34%;height:6px;border-radius:9px;background:#d9ddf4;margin:0 auto 16px}
+.scr h4{font:600 16px Unbounded,sans-serif;margin:0 0 4px}
+.scr .muted{font-size:12px;color:#566083;margin-bottom:14px}
+.scr .field{border:1.5px solid #d9ddf4;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.scr .field small{display:block;color:#566083;font-size:11px}
+.scr .diia{background:#000;color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:600;font-size:14px;margin-top:12px}
+.scr .shots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scr .shots div{border-radius:10px;overflow:hidden;border:2px solid #1d7650;font-size:11px}
+.scr .shots svg{display:block;width:100%;height:auto}
+.scr .shots span{display:block;padding:4px 6px}
+.scr .seal-box{text-align:center;padding:16px 0}
+.scr .pill{display:inline-block;background:#e4f3ec;color:#1d7650;font-weight:600;font-size:12px;padding:6px 12px;border-radius:99px;margin-top:10px}
+.scr .ret{background:#2b3fd6;color:#fff;border-radius:16px;padding:16px;margin-top:10px}
+.scr .ret b{font:600 22px Unbounded,sans-serif;display:block}
+.scr .line{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #eef0fd}
+/* roles */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.tabs button{all:unset;cursor:pointer;padding:14px 18px;font-weight:600;color:var(--soft);position:relative;min-height:44px;box-sizing:border-box}
+.tabs button[aria-selected=true]{color:var(--blue)}
+.tabs button[aria-selected=true]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;border-bottom:3px solid currentColor;border-radius:3px}
+.tabs button:focus-visible{outline:3px solid var(--wax)}
+.role{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.role ul{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.role li{display:grid;grid-template-columns:28px 1fr;gap:12px}
+.role li p{color:var(--soft);font-size:16px}
+.role aside{background:var(--pale);border-radius:24px;padding:28px}
+.role aside .num{display:block;margin:6px 0 10px}
+/* calculator + compare */
+.calc{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.calc-card{background:var(--deep);color:#fff;border-radius:28px;padding:clamp(24px,3vw,36px)}
+.calc-card label{font-weight:500;display:block;color:#dde2ff}
+.calc-card output{display:block;font:600 clamp(34px,4vw,48px)/1.1 Unbounded,sans-serif;margin:6px 0 18px}
+input[type=range]{width:100%;accent-color:#fff;height:28px}
+.calc-card .line{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.2);font-variant-numeric:tabular-nums}
+.calc-card .line:last-of-type{border:0;font-weight:600;font-size:19px}
+table.cmp{width:100%;border-collapse:collapse;font-size:16px}
+.cmp th,.cmp td{text-align:left;padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp thead th{font-size:14px;color:var(--soft);font-weight:500}
+.cmp tbody th{font-weight:600}
+.cmp tr.us{background:var(--pale)}
+.cmp tr.us th{color:var(--blue)}
+.yes{color:var(--ok);font-weight:600}.no{color:var(--wax);font-weight:600}
+/* faq */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:22px 44px 22px 0;font-weight:600;font-size:18px;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";position:absolute;right:8px;top:50%;width:12px;height:12px;border-right:2.5px solid var(--blue);border-bottom:2.5px solid var(--blue);transform:translateY(-70%) rotate(45deg);transition:transform .2s}
+.faq details[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+.faq details p{padding:0 0 22px;color:var(--soft);max-width:68ch}
+/* cta + footer */
+.cta{background:var(--deep);color:#fff;border-radius:32px;padding:clamp(32px,5vw,64px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;overflow:hidden;position:relative}
+.cta p{color:#dde2ff;margin-top:12px;max-width:46ch}
+footer{border-top:1px solid var(--line)}
+.foot{display:grid;grid-template-columns:1.4fr repeat(3,minmax(0,1fr));gap:32px}
+.foot h3{font-size:15px;margin-bottom:12px}
+.foot ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:15px;color:var(--soft)}
+.foot a{text-decoration:none}.foot a:hover{color:var(--blue)}
+.legal{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--soft);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+/* demo views */
+.app{max-width:780px;margin:0 auto}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-weight:600;text-decoration:none;margin-bottom:18px;min-height:44px}
+.progress{display:flex;gap:6px;list-style:none;padding:0;margin:22px 0 28px}
+.progress li{flex:1;border-top:4px solid var(--line);padding-top:8px;font-size:14px;color:var(--soft)}
+.progress li.on{border-color:var(--blue);color:var(--ink);font-weight:600}
+.progress li.done{border-color:var(--ok)}
+.panel{border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,30px);background:var(--card);margin-bottom:20px}
+.panel h3{margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.panel label{display:block;font-weight:500;font-size:15px}
+.panel input:not([type=file]):not([type=radio]){font:16px "Golos Text",sans-serif;width:100%;margin-top:6px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);min-height:48px}
+.panel input:user-invalid{border-color:var(--wax)}
+.err{display:none;color:var(--wax);font-size:13px;margin-top:4px}
+input:user-invalid+.err{display:block}
+.signed{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--pale);margin-top:16px;font-weight:500}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.room{position:relative;border:1.5px dashed var(--line);border-radius:16px;padding:12px;display:grid;gap:6px}
+.room.ok{border-style:solid;border-color:var(--ok)}
+.room svg{width:100%;height:auto;border-radius:10px}
+.room small{color:var(--soft)}
+.room label{font-size:14px;color:var(--blue);cursor:pointer}
+.room input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.sum{width:100%;border-collapse:collapse}
+.sum td{padding:11px 0;border-bottom:1px solid var(--line)}
+.sum td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sum tr.total td{font-weight:600;border-bottom:0;font-size:18px}
+.sealed{text-align:center;padding:24px 10px}
+.sealed svg{width:min(300px,80%);height:auto}
+.compare{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1fr) 160px;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.compare svg{width:100%;height:auto;border-radius:10px}
+.tag{font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;justify-self:start;display:inline-block}
+.tag.wear{background:var(--pale);color:var(--blue)}
+.tag.dmg{background:color-mix(in srgb,var(--wax) 14%,transparent);color:var(--wax)}
+.cap{font-size:12px;color:var(--soft);margin-top:4px}
+.result{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--deep);color:#fff;border-radius:22px;padding:26px}
+.result b{display:block;font:600 clamp(26px,4vw,38px)/1.15 Unbounded,sans-serif}
+.result p{color:#dde2ff}
+.stars{display:flex;gap:2px;border:0;padding:0;margin:8px 0 0}
+.stars input{position:absolute;opacity:0;width:1px}
+.stars label{font-size:32px;line-height:1;cursor:pointer;color:var(--line);padding:4px}
+.stars label.lit{color:#e3a400}
+.stars input:focus-visible+label{outline:3px solid var(--wax);border-radius:6px}
+.toast{margin-top:14px;font-weight:500}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.25s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.btn{transition:none}}
+@media(max-width:980px){.menu{display:none}.hero .wrap,.prob,.how-grid,.role,.calc{grid-template-columns:minmax(0,1fr)}.strip .wrap{grid-template-columns:repeat(2,minmax(0,1fr))}.foot{grid-template-columns:repeat(2,minmax(0,1fr))}.scene{max-width:560px;width:100%;margin:0 auto}}
+@media(max-width:600px){body{font-size:16px}.hdr-cta .ghost{display:none}.strip .wrap,.grid2,.foot{grid-template-columns:minmax(0,1fr)}.stats div{grid-template-columns:minmax(0,1fr);gap:4px}
+ .cta{grid-template-columns:minmax(0,1fr)}.compare{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.result{grid-template-columns:minmax(0,1fr)}
+ .cmp thead{display:none}.cmp tr{display:grid;padding:10px 0;border-bottom:1px solid var(--line)}.cmp th,.cmp td{border:0;padding:3px 8px}
+ .cmp td::before{content:attr(data-l) ": ";color:var(--soft);font-weight:400}.phone{width:50%}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <g id="seal"><circle r="34" fill="#d1342b"/><circle r="27" fill="none" stroke="#a8241d" stroke-width="3" stroke-dasharray="4 4"/><path d="M-4 -16 c-12 0 -14 14 -2 16 l8 2 c10 2 8 16 -4 16 c-6 0 -10 -3 -12 -7 M4 -16 c5 0 9 3 11 7" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g>
+ <g id="roomBase"><rect width="160" height="110" fill="#e9ecfc"/><rect y="78" width="160" height="32" fill="#c9cff0"/><rect x="100" y="14" width="44" height="38" rx="3" fill="#fff" stroke="#9aa4e0" stroke-width="3"/><line x1="122" y1="14" x2="122" y2="52" stroke="#9aa4e0" stroke-width="3"/></g>
+ <g id="sofa"><rect x="16" y="52" width="70" height="30" rx="8" fill="#2b3fd6"/><rect x="12" y="62" width="14" height="22" rx="5" fill="#1e2fa8"/><rect x="76" y="62" width="14" height="22" rx="5" fill="#1e2fa8"/></g>
+ <g id="kitchen"><rect x="8" y="58" width="84" height="26" fill="#2b3fd6"/><rect x="8" y="52" width="84" height="8" fill="#1e2fa8"/><rect x="20" y="20" width="36" height="22" fill="#c9cff0" stroke="#9aa4e0" stroke-width="2"/><circle cx="74" cy="70" r="5" fill="#e9ecfc"/></g>
+ <g id="bath"><rect x="10" y="56" width="80" height="26" rx="12" fill="#fff" stroke="#2b3fd6" stroke-width="4"/><path d="M24 56 V30 h12" fill="none" stroke="#2b3fd6" stroke-width="4"/></g>
+ <g id="door"><rect x="30" y="18" width="40" height="64" fill="#2b3fd6"/><circle cx="62" cy="52" r="3" fill="#fff"/><rect x="80" y="30" width="10" height="40" fill="#c9cff0"/></g>
+ <symbol id="tick" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="currentColor" opacity=".18"/><path d="M5.5 10.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+
+<header>
+ <div class="wrap">
+  <a class="logo" href="#home" aria-label="SafeRent, на головну"><svg viewBox="-36 -36 72 72" aria-hidden="true"><use href="#seal"/></svg>SafeRent</a>
+  <nav class="menu" aria-label="Розділи сайту">
+   <a href="#how">Як це працює</a><a href="#roles">Для кого</a><a href="#price">Ціна</a><a href="#faq">Питання</a>
+  </nav>
+  <div class="hdr-cta"><a class="btn ghost sm" href="#checkout">Демо виїзду</a><a class="btn sm" href="#deal">Оформити угоду</a></div>
+ </div>
+</header>
+
+<main>
+<div id="v-home" data-view>
+<!-- HERO -->
+<section class="hero band">
+ <div class="wrap">
+  <div>
+   <h1>Застава, яку повертають</h1>
+   <p class="lead">SafeRent зберігає ваш депозит на захищеному рахунку банку-партнера, поки ви живете в квартирі, і повертає його за фото «до» і «після».</p>
+   <ul class="ticks">
+    <li><svg width="20" height="20"><use href="#tick"/></svg><span><b>Орендарям:</b> гроші не в кишені власника, нормальний знос не утримується</span></li>
+    <li><svg width="20" height="20"><use href="#tick"/></svg><span><b>Власникам:</b> компенсація за доведені пошкодження і контроль з іншого міста</span></li>
+    <li><svg width="20" height="20"><use href="#tick"/></svg><span><b>Рієлторам:</b> договір, фотоакт і винагорода в одному застосунку</span></li>
+   </ul>
+   <div class="row"><a class="btn white" href="#deal">Оформити угоду</a><a class="btn line-w" href="#how">Як це працює</a></div>
+  </div>
+  <div class="scene" role="img" aria-label="Запечатаний конверт з депозитом 10 000 гривень і телефон зі статусом угоди">
+   <svg class="env" viewBox="0 0 520 340" aria-hidden="true">
+    <rect x="10" y="20" width="500" height="300" rx="22" fill="#fff"/>
+    <path d="M10 40 L260 160 L510 40 Z" fill="#f0f2fd" stroke="#d9ddf4" stroke-width="4" stroke-linejoin="round"/>
+    <g opacity=".7" stroke="#dfe3fa" fill="none"><path d="M40 300 q25 -14 50 0 t50 0 t50 0 t50 0"/><path d="M40 288 q25 -14 50 0 t50 0 t50 0 t50 0"/></g>
+    <text x="44" y="222" font-family="Golos Text,sans-serif" font-size="17" fill="#566083">Депозит під захистом</text>
+    <text x="44" y="268" font-family="Unbounded,sans-serif" font-weight="600" font-size="38" fill="#111936">10 000 ₴</text>
+    <use href="#seal" x="260" y="160"/>
+   </svg>
+   <div class="phone" aria-hidden="true">
+    <div class="bar"></div>
+    <h4>Городоцька, 45</h4><p class="muted">Угода №2481 · Львів</p>
+    <ul class="tl">
+     <li><i></i><span>Договір підписано<small>Дія.Підпис, 1 березня</small></span></li>
+     <li><i></i><span>Фотоакт заїзду<small>24 фото, 4 кімнати</small></span></li>
+     <li class="now"><i></i><span>Депозит у конверті<small>10 000 ₴ на ескроу</small></span></li>
+     <li class="next"><i></i><span>Виїзд і повернення<small>до 3 днів</small></span></li>
+    </ul>
+   </div>
+  </div>
+ </div>
+ <div class="wrap"><p class="sample">Прототип сервісу. Дані угод на сторінці умовні.</p></div>
+</section>
+
+<div class="strip"><div class="wrap">
+ <p><b>2,5%</b><span>від застави, разова оплата</span></p>
+ <p><b>Дія.Підпис</b><span>договір без паперів і нотаріуса</span></p>
+ <p><b>7 днів</b><span>на домовленість у разі суперечки</span></p>
+ <p><b>до 3 днів</b><span>щоб гроші прийшли на картку</span></p>
+</div></div>
+
+<!-- PROBLEM -->
+<section class="band" id="problem"><div class="wrap prob">
+ <div>
+  <div class="intro"><h2>Чому застава так часто не повертається</h2><p>Договір на словах, стан квартири ніде не зафіксований, а суперечку немає кому розсудити. Гроші весь час у власника, тож і останнє слово за ним.</p></div>
+  <div class="stats">
+   <div><span class="num">≈1 млн</span><p>домогосподарств в Україні орендують житло із заставою (наша оцінка)</p></div>
+   <div><span class="num">1 з 4</span><p>орендарів має труднощі з поверненням повної застави, навіть у Британії, де її захист обовʼязковий</p></div>
+   <div><span class="num">10 000 ₴</span><p>типова застава, тобто місячна оренда, яку людина ризикує втратити</p></div>
+  </div>
+ </div>
+ <div class="quote">
+  <h3>Що каже закон</h3>
+  <ul>
+   <li>В Україні немає вимоги зберігати заставу на окремому рахунку: гроші просто отримує власник.</li>
+   <li>Юристи радять додавати до договору опис стану квартири, але на практиці це роблять рідко.</li>
+   <li>Якщо гроші не повернули, лишається суд, а це місяці і витрати, більші за саму заставу.</li>
+  </ul>
+  <p class="note" style="margin-top:18px">SafeRent робить ці поради звичайним кроком угоди, а не окремим клопотом.</p>
+ </div>
+</div></section>
+
+<!-- HOW -->
+<section class="band how" id="how"><div class="wrap">
+ <div class="intro"><h2>Як це працює</h2><p>Чотири кроки від підпису до повернення. Натисніть на крок, щоб побачити екран застосунку.</p></div>
+ <div class="how-grid">
+  <ol class="steps" role="tablist" aria-label="Кроки угоди">
+   <li><button role="tab" id="t1" aria-selected="true" data-scr="1"><span><h3>Підписуєте договір</h3><p>Онлайн через Дія.Підпис. Обидві сторони ідентифіковані, умови однакові для всіх.</p></span></button></li>
+   <li><button role="tab" id="t2" aria-selected="false" tabindex="-1" data-scr="2"><span><h3>Фотографуєте квартиру</h3><p>Власник або рієлтор знімає кожну кімнату. Фото бачать обидві сторони, змінити їх не можна.</p></span></button></li>
+   <li><button role="tab" id="t3" aria-selected="false" tabindex="-1" data-scr="3"><span><h3>Депозит іде в конверт</h3><p>Гроші лежать на ескроу-рахунку банку-партнера. Ні власник, ні ми не можемо їх забрати.</p></span></button></li>
+   <li><button role="tab" id="t4" aria-selected="false" tabindex="-1" data-scr="4"><span><h3>Виїжджаєте і отримуєте гроші</h3><p>Нові фото порівнюють зі старими. Нормальний знос не рахується, гроші приходять за 3 дні.</p></span></button></li>
+  </ol>
+  <div class="big-phone" role="tabpanel" aria-labelledby="t1" id="screen" aria-live="polite"></div>
+ </div>
+</div></section>
+
+<!-- ROLES -->
+<section class="band" id="roles"><div class="wrap">
+ <div class="intro"><h2>Кожен отримує своє</h2><p>Угоду бачать три сторони, і в кожної свій інтерес.</p></div>
+ <div class="tabs" role="tablist" aria-label="Для кого SafeRent">
+  <button role="tab" id="r-ten" aria-selected="true">Орендарю</button>
+  <button role="tab" id="r-own" aria-selected="false" tabindex="-1">Власнику</button>
+  <button role="tab" id="r-agt" aria-selected="false" tabindex="-1">Рієлтору</button>
+ </div>
+ <div id="rolePanel" role="tabpanel" aria-labelledby="r-ten"></div>
+</div></section>
+
+<!-- PRICE -->
+<section class="band how" id="price"><div class="wrap">
+ <div class="intro"><h2>Скільки це коштує</h2><p>Платить орендар, один раз за угоду. Для власників і рієлторів сервіс безкоштовний.</p></div>
+ <div class="calc">
+  <div class="calc-card">
+   <label for="dep">Сума застави</label>
+   <output id="depOut" for="dep">10 000 ₴</output>
+   <input type="range" id="dep" min="3000" max="40000" step="500" value="10000">
+   <div style="margin-top:18px">
+    <div class="line"><span>Застава, повертається</span><span id="cDep">10 000 ₴</span></div>
+    <div class="line"><span>Послуга SafeRent, 2,5%</span><span id="cFee">250 ₴</span></div>
+    <div class="line"><span>Разом при заселенні</span><span id="cTot">10 250 ₴</span></div>
+   </div>
+   <a class="btn white" style="margin-top:22px;width:100%" href="#deal">Оформити угоду</a>
+  </div>
+  <div>
+   <h3 style="margin-bottom:12px">Порівняння з тим, що є зараз</h3>
+   <table class="cmp">
+    <thead><tr><th>Спосіб</th><th>Скільки ви втрачаєте</th><th>Гроші повертаються</th><th>Хто розсудить</th></tr></thead>
+    <tbody>
+     <tr class="us"><th>SafeRent</th><td data-l="Втрачаєте" id="mUs">250 ₴</td><td data-l="Повертаються" class="yes">Так, за фото</td><td data-l="Розсудить">Незалежний експерт</td></tr>
+     <tr><th>Готівка власнику</th><td data-l="Втрачаєте">0 ₴, якщо пощастить</td><td data-l="Повертаються" class="no">Як вирішить власник</td><td data-l="Розсудить">Ніхто, тільки суд</td></tr>
+     <tr><th>Страховка замість застави</th><td data-l="Втрачаєте">від 4 000 ₴</td><td data-l="Повертаються" class="no">Ні, платіж разовий</td><td data-l="Розсудить">Страхова компанія</td></tr>
+     <tr><th>Рієлтор</th><td data-l="Втрачаєте" id="mAg">≈5 000 ₴</td><td data-l="Повертаються" class="no">Не гарантує</td><td data-l="Розсудить">Рієлтор, якому платить власник</td></tr>
+    </tbody>
+   </table>
+   <p class="note" style="margin-top:12px">Рієлтор: у середньому 50% місячної оренди. Страховка: тарифи сервісів оренди без застави в Україні, 2026.</p>
+  </div>
+ </div>
+</div></section>
+
+<!-- FAQ -->
+<section class="band" id="faq"><div class="wrap faq">
+ <div class="intro"><h2>Часті питання</h2></div>
+ <details name="faq" open><summary>Хто зберігає мої гроші?</summary><p>Банк-партнер, на окремому ескроу-рахунку. SafeRent лише передає банку рішення, коли і кому виплатити гроші. Ні власник, ні ми не можемо зняти їх раніше.</p></details>
+ <details name="faq"><summary>Що вважається нормальним зносом?</summary><p>Вигорілі штори і шпалери, потерта підлога в проходах, дрібні сліди від меблів. Перелік є в договорі ще до заселення, тож за них нічого не утримують.</p></details>
+ <details name="faq"><summary>Що буде, якщо ми з власником не погодимося?</summary><p>У вас є 7 днів, щоб домовитися в застосунку. Якщо не вийшло, незалежний експерт порівнює фото і договір і ухвалює рішення. Сума, яку ніхто не оскаржує, повертається одразу.</p></details>
+ <details name="faq"><summary>Власник живе в іншому місті. Хто проведе огляд?</summary><p>Рієлтор або керуючий, якого власник призначить у застосунку. Власник бачить усі фото дистанційно і підтверджує повернення онлайн.</p></details>
+ <details name="faq"><summary>Скільки це коштує власнику?</summary><p>Розміщення і угоди для власників безкоштовні. За бажанням можна оплатити просування оголошення. Статус «перевірений власник» не продається: його дає історія чесно повернутих застав.</p></details>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+ <div class="cta">
+  <div><h2>Наступна застава повернеться</h2><p>Оформіть угоду до заселення: договір, фотоакт і депозит займають близько 15 хвилин.</p></div>
+  <div class="row"><a class="btn white" href="#deal">Оформити угоду</a><a class="btn line-w" href="#checkout">Подивитися виїзд</a></div>
+ </div>
+</div></section>
+</div>
+
+<!-- DEAL -->
+<section id="v-deal" data-view hidden><div class="band"><div class="app">
+ <a class="back" href="#home">← На головну</a>
+ <h1>Нова угода</h1>
+ <ol class="progress" aria-label="Етапи угоди"><li data-s="1">Договір</li><li data-s="2">Фотоакт</li><li data-s="3">Депозит</li></ol>
+ <form class="panel" id="s1" novalidate>
+  <h3>Умови оренди</h3>
+  <div class="grid2">
+   <label>Адреса квартири<input name="addr" required value="Львів, вул. Городоцька, 45, кв. 12" autocomplete="street-address"><span class="err">Вкажіть адресу квартири.</span></label>
+   <label>Телефон власника<input name="phone" type="tel" required pattern="\+?380\d{9}" value="+380671234567" autocomplete="tel"><span class="err">Номер у форматі +380XXXXXXXXX.</span></label>
+   <label>Оренда на місяць, ₴<input name="rent" type="number" min="1000" step="100" required value="10000" inputmode="numeric"><span class="err">Від 1 000 ₴.</span></label>
+   <label>Застава, ₴<input name="dep" type="number" min="1000" step="100" required value="10000" inputmode="numeric"><span class="err">Від 1 000 ₴.</span></label>
+  </div>
+  <div class="row" style="margin-top:20px"><button class="btn" type="submit" id="sign">Підписати через Дія.Підпис</button></div>
+  <p class="signed" id="signedMsg" hidden>✓ Договір підписали обидві сторони</p>
+ </form>
+ <section class="panel">
+  <h3>Фотоакт заїзду</h3>
+  <p class="note" style="margin-bottom:14px">Додайте фото кожної кімнати. Їх побачать обидві сторони, змінити їх після підписання не можна.</p>
+  <div class="rooms" id="rooms"></div>
+ </section>
+ <section class="panel">
+  <h3>Застава</h3>
+  <table class="sum"><tbody>
+   <tr><td>Застава в конверті</td><td id="tDep">10 000 ₴</td></tr>
+   <tr><td>Послуга SafeRent, 2,5%</td><td id="tFee">250 ₴</td></tr>
+   <tr class="total"><td>До сплати зараз</td><td id="tTot">10 250 ₴</td></tr>
+  </tbody></table>
+  <div class="row" style="margin-top:20px"><button class="btn wax" id="pay" disabled>Покласти заставу в конверт</button><span class="note" id="payHint">Спершу підпишіть договір і додайте фото всіх кімнат.</span></div>
+  <div class="sealed" id="sealed" hidden>
+   <svg viewBox="0 0 320 200" role="img" aria-label="Конверт запечатано"><rect x="10" y="20" width="300" height="170" rx="16" fill="#eef0fd"/><path d="M10 34 L160 120 L310 34" fill="none" stroke="#c4cbf3" stroke-width="4"/><use href="#seal" x="160" y="120"/></svg>
+   <h2>Конверт запечатано</h2>
+   <p class="note" style="margin-top:8px">Застава під захистом до вашого виїзду.</p>
+   <a class="btn ghost" style="margin-top:18px" href="#checkout">Подивитися, як пройде виїзд</a>
+  </div>
+ </section>
+ <p class="note">Дані угоди умовні, для прикладу.</p>
+</div></div></section>
+
+<!-- CHECKOUT -->
+<section id="v-checkout" data-view hidden><div class="band"><div class="app">
+ <a class="back" href="#home">← На головну</a>
+ <h1>Виїзд і повернення</h1>
+ <p class="note" style="margin:10px 0 22px">Львів, вул. Городоцька, 45, кв. 12. Фото «після» зробив рієлтор, порівняння перевірив експерт SafeRent.</p>
+ <div class="panel" id="cmp"></div>
+ <div class="result">
+  <div><p>Вам повернуть</p><b>9 200 ₴ з 10 000 ₴</b><p style="margin-top:6px">800 ₴ утримано за подряпину на стільниці. Гроші прийдуть на картку протягом 3 днів.</p></div>
+  <svg width="84" height="84" viewBox="-42 -42 84 84" aria-hidden="true"><use href="#seal"/></svg>
+ </div>
+ <div class="row" style="margin-top:20px"><button class="btn" id="agree">Погодитися з рішенням</button><button class="btn ghost" id="dispute">Оскаржити</button></div>
+ <p class="toast" id="msg" role="status"></p>
+ <div class="panel" style="margin-top:24px">
+  <h3>Оцініть власника</h3>
+  <p class="note">Рейтинг бачать інші орендарі, як у таксі.</p>
+  <fieldset class="stars" id="stars"><legend style="position:absolute;width:1px;height:1px;overflow:hidden">Оцінка від 1 до 5</legend></fieldset>
+  <p class="toast" id="rated" role="status" style="color:var(--ok)"></p>
+ </div>
+</div></div></section>
+</main>
+
+<footer class="band" style="padding-bottom:32px"><div class="wrap">
+ <div class="foot">
+  <div><a class="logo" href="#home"><svg viewBox="-36 -36 72 72" aria-hidden="true"><use href="#seal"/></svg>SafeRent</a><p class="note" style="margin-top:12px;max-width:30ch">Сервіс захисту орендних застав. Студентський стартап-проєкт, Львів.</p></div>
+  <div><h3>Сервіс</h3><ul><li><a href="#how">Як це працює</a></li><li><a href="#price">Ціна</a></li><li><a href="#deal">Оформити угоду</a></li></ul></div>
+  <div><h3>Для кого</h3><ul><li><a href="#roles">Орендарям</a></li><li><a href="#roles">Власникам</a></li><li><a href="#roles">Рієлторам</a></li></ul></div>
+  <div><h3>Допомога</h3><ul><li><a href="#faq">Часті питання</a></li><li><a href="#checkout">Демо виїзду</a></li></ul></div>
+ </div>
+ <div class="legal"><span>© 2026 SafeRent. Прототип, не є фінансовою послугою.</span><span>Зроблено в Україні</span></div>
+</div></footer>
+
+<script>
+{
+const fmt=n=>new Intl.NumberFormat('uk-UA').format(Math.round(n))+' ₴';
+const $=id=>document.getElementById(id);
+/* routing */
+const views=['home','deal','checkout'];let first=true;
+const show=()=>{
+ const h=location.hash.slice(1);const v=views.includes(h)?h:'home';
+ const run=()=>{document.querySelectorAll('[data-view]').forEach(s=>s.hidden=s.id!=='v-'+v);
+  const t=views.includes(h)?null:document.getElementById(h);
+  t?t.scrollIntoView():window.scrollTo(0,0)};
+ if(first||!document.startViewTransition){first=false;run();return}
+ document.startViewTransition(run).ready.catch(()=>{});
+};
+addEventListener('hashchange',show);show();
+
+/* generic tabs with arrow keys */
+function tabs(list,onSel){const bs=[...list.querySelectorAll('[role=tab]')];
+ const sel=b=>{bs.forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});onSel(b)};
+ bs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{const d={ArrowDown:1,ArrowRight:1,ArrowUp:-1,ArrowLeft:-1}[e.key];if(d){e.preventDefault();const n=bs[(i+d+bs.length)%bs.length];n.focus();sel(n)}})});
+ sel(bs.find(b=>b.getAttribute('aria-selected')==='true'))}
+
+/* how: phone screens */
+const room=(k,extra='')=>`<svg viewBox="0 0 160 110" aria-hidden="true"><use href="#roomBase"/><use href="#${k}"/>${extra}</svg>`;
+const scr={
+1:`<div class="scr"><h4>Договір оренди</h4><p class="muted">Перевірте умови перед підписом</p><div class="field"><small>Адреса</small>Городоцька, 45, кв. 12</div><div class="field"><small>Оренда</small>10 000 ₴ на місяць</div><div class="field"><small>Застава</small>10 000 ₴</div><div class="field"><small>Нормальний знос</small>Не утримується, перелік у п. 6</div><div class="diia">Підписати в Дії</div></div>`,
+2:`<div class="scr"><h4>Фотоакт заїзду</h4><p class="muted">4 з 4 кімнат готові</p><div class="shots">${[['sofa','Кімната'],['kitchen','Кухня'],['bath','Санвузол'],['door','Коридор']].map(([k,n])=>`<div>${room(k)}<span>${n} · 6 фото</span></div>`).join('')}</div></div>`,
+3:`<div class="scr"><h4>Застава</h4><p class="muted">Ескроу-рахунок банку-партнера</p><div class="seal-box"><svg viewBox="0 0 220 140" width="100%"><rect x="6" y="10" width="208" height="120" rx="14" fill="#eef0fd"/><path d="M6 22 L110 84 L214 22" fill="none" stroke="#c4cbf3" stroke-width="4"/><use href="#seal" x="110" y="84"/></svg><span class="pill">10 000 ₴ під захистом</span></div><div class="line"><span>Відкриється</span><b>після виїзду</b></div><div class="line"><span>Хто може забрати раніше</span><b>ніхто</b></div></div>`,
+4:`<div class="scr"><h4>Виїзд</h4><p class="muted">Порівняння «до» і «після»</p><div class="line"><span>Кімната</span><span style="color:#2b3fd6">знос, 0 ₴</span></div><div class="line"><span>Кухня</span><span style="color:#d1342b">подряпина, 800 ₴</span></div><div class="line"><span>Санвузол</span><span>без змін</span></div><div class="line"><span>Коридор</span><span>без змін</span></div><div class="ret">Повертаємо<b>9 200 ₴</b><small>на картку до 3 днів</small></div></div>`};
+tabs(document.querySelector('.steps'),b=>{const s=$('screen');s.innerHTML='<div class="bar"></div>'+scr[b.dataset.scr];s.setAttribute('aria-labelledby',b.id)});
+
+/* roles */
+const tk='<svg width="22" height="22" style="color:var(--blue)"><use href="#tick"/></svg>';
+const roles={'r-ten':[[['Застава не у власника','Гроші лежать у банку, власник не може їх просто не віддати.'],['Знос не рахується','Вигорілі штори чи потерта підлога не причина утримати гроші.'],['Чесний розгляд','Якщо є суперечка, рішення ухвалює експерт, не повʼязаний з жодною стороною.']],'2,5%','від застави, і це все, що ви платите'],
+ 'r-own':[[['Компенсація гарантована','Доведені пошкодження оплачуються із застави, без розмов і погроз.'],['Контроль з іншого міста','Фото, договір і рішення в застосунку. Огляд проводить ваш рієлтор.'],['Кращі орендарі','Рейтинг орендарів показує, хто дбайливо ставиться до житла.']],'0 ₴','для власника: оголошення й угоди безкоштовні'],
+ 'r-agt':[[['Угода за 15 хвилин','Договір, фотоакт і застава в одному місці замість паперів і чатів.'],['Менше конфліктів','Коли заставу не повертають, винним роблять рієлтора. Тепер рішення ухвалює платформа.'],['Винагорода','Частка від послуги за кожну угоду, яку ви провели через SafeRent.']],'+ дохід','з кожної угоди, проведеної через SafeRent']};
+tabs(document.querySelector('#roles [role=tablist]'),b=>{const [items,n,t]=roles[b.id];const p=$('rolePanel');p.setAttribute('aria-labelledby',b.id);
+ p.innerHTML=`<div class="role"><ul>${items.map(([h,d])=>`<li>${tk}<div><h3>${h}</h3><p>${d}</p></div></li>`).join('')}</ul><aside><p class="note">Вартість</p><span class="num">${n}</span><p>${t}</p><a class="btn" style="margin-top:20px" href="#deal">Оформити угоду</a></aside></div>`});
+
+/* calculator */
+const dep=$('dep');const calc=()=>{const d=+dep.value,f=d*.025;$('depOut').textContent=fmt(d);$('cDep').textContent=fmt(d);$('cFee').textContent=fmt(f);$('cTot').textContent=fmt(d+f);$('mUs').textContent=fmt(f);$('mAg').textContent='≈'+fmt(d*.5)};
+dep.addEventListener('input',calc);calc();
+
+/* deal */
+let signed=false;const rooms=[['Кімната','sofa',true],['Кухня','kitchen',true],['Санвузол','bath',false],['Коридор','door',false]];
+const rEl=$('rooms');
+const drawRooms=()=>{rEl.innerHTML=rooms.map(([n,k,ok],i)=>`<div class="room ${ok?'ok':''}">${room(k)}<b>${n}</b><small>${ok?'6 фото додано':'Фото ще немає'}</small><label for="f${i}">${ok?'Замінити фото':'Додати фото'}</label><input type="file" id="f${i}" accept="image/*" multiple data-i="${i}"></div>`).join('');check()};
+rEl.addEventListener('change',e=>{const i=e.target.dataset.i;if(i!=null&&e.target.files.length){rooms[i][2]=true;drawRooms()}});
+const form=$('s1');
+const dcalc=()=>{const d=+form.dep.value||0,f=d*.025;$('tDep').textContent=fmt(d);$('tFee').textContent=fmt(f);$('tTot').textContent=fmt(d+f)};
+form.addEventListener('input',dcalc);
+form.addEventListener('submit',e=>{e.preventDefault();if(!form.checkValidity()){form.reportValidity();return}signed=true;$('signedMsg').hidden=false;$('sign').textContent='Договір підписано';$('sign').disabled=true;check()});
+function check(){const all=rooms.every(r=>r[2]);
+ document.querySelectorAll('.progress li').forEach(li=>{const s=+li.dataset.s;li.className=(s===1&&signed)||(s===2&&all&&signed)?'done':((s===1&&!signed)||(s===2&&signed&&!all)||(s===3&&signed&&all)?'on':'')});
+ $('pay').disabled=!(signed&&all);$('payHint').textContent=$('pay').disabled?'Спершу підпишіть договір і додайте фото всіх кімнат.':'Усе готово.'}
+$('pay').addEventListener('click',()=>{$('sealed').hidden=false;$('pay').hidden=true;$('payHint').hidden=true});
+drawRooms();dcalc();
+
+/* checkout */
+const scratch='<g stroke="#d1342b" stroke-width="3" fill="none"><path d="M30 56 l36 -4"/><circle cx="48" cy="55" r="15"/></g>';
+const fade='<rect x="100" y="14" width="44" height="38" fill="#fff6c9" opacity=".6"/>';
+const cmp=[['Кімната','sofa',fade,'wear','Нормальний знос','Вигорілі штори: 0 ₴'],['Кухня','kitchen',scratch,'dmg','Пошкодження','Подряпина на стільниці: 800 ₴'],['Санвузол','bath','','wear','Без змін','0 ₴']];
+$('cmp').innerHTML='<h3>Порівняння «до» і «після»</h3>'+cmp.map(([n,k,a,t,l,c])=>`<div class="compare"><h3>${n}</h3><div>${room(k)}<p class="cap">До, 1 березня</p></div><div>${room(k,a)}<p class="cap">Після, 20 листопада</p></div><div><span class="tag ${t}">${l}</span><p class="cap">${c}</p></div></div>`).join('');
+$('agree').addEventListener('click',()=>{$('msg').textContent='Погоджено. 9 200 ₴ надійдуть на картку протягом 3 днів.';$('msg').style.color='var(--ok)'});
+$('dispute').addEventListener('click',()=>{$('msg').textContent='Суперечку відкрито. 7 днів на домовленість з власником, далі рішення ухвалить незалежний експерт.';$('msg').style.color='var(--wax)'});
+const st=$('stars');st.insertAdjacentHTML('beforeend',[1,2,3,4,5].map(n=>`<input type="radio" name="r" id="r${n}" value="${n}"><label for="r${n}" aria-label="${n} з 5">★</label>`).join(''));
+st.addEventListener('change',e=>{const v=+e.target.value;st.querySelectorAll('label').forEach((l,i)=>l.classList.toggle('lit',i<v));$('rated').textContent=`Дякуємо! Ваша оцінка: ${v} з 5.`});
+}
+</script>
+</body>
+</html>
